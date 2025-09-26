@@ -130,7 +130,7 @@ normal=$(tput sgr0)
 alias list='cat ~/.config/zsh/alias.zsh | grep "^alias" | gsed -En "s/alias (\w+)=(.+)/${bold}\1\n  ${normal}\2\n/p"'
 
 alias ldd="otool -L" # display shared object files a binary is linked to
-alias ls="eza -lh --icons --octal-permissions --no-user --git --group-directories-first --all" # REMOVED: `--ignore-glob '.git|node_modules'`
+#alias ls="eza -lh --icons --octal-permissions --no-user --git --group-directories-first --all" # REMOVED: `--ignore-glob '.git|node_modules'`
 alias lsd="ls -s 'modified'"
 alias mtr="sudo mtr --report-wide --show-ips --aslookup"
 alias nv="novowels"
