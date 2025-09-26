@@ -44,7 +44,7 @@ export LS_COLORS="rs=0:di=36:ln=32:mh=00:pi=33:so=33:do=33:bd=00:cd=00:or=05;36:
 
 # Application Configuration
 #
-export DOCKER_HOST="unix://$HOME/.colima/docker.sock" # Fixes `docker` commands so they can find where Colima runtime is
+#export DOCKER_HOST="unix://$HOME/.colima/docker.sock" # Fixes `docker` commands so they can find where Colima runtime is
 export EDITOR="nvim"
 export FZF_COMPLETION_OPTS='--border --info=inline'
 export FZF_DEFAULT_COMMAND="rg --hidden --no-ignore --files"
@@ -104,9 +104,9 @@ man() {
 #
 export PATH="/usr/local/bin:$PATH"
 export PATH="/usr/local/sbin:$PATH"
-export PATH="$HOME/.cargo/bin:$PATH"                                            # rust executables
+#export PATH="$HOME/.cargo/bin:$PATH"                                            # rust executables
 export PATH="/opt/homebrew/opt/ruby/bin:$PATH"                                  # ruby executables
-export PATH="$HOME/bin:$PATH"                                                   # terraform executables (via tfswitch)
+#export PATH="$HOME/bin:$PATH"                                                   # terraform executables (via tfswitch)
 export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH" # yarn executables
 
 # IMPORTANT: We MUST assign the modified path to a new environment variable.

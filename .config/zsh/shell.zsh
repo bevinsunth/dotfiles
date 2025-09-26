@@ -21,9 +21,6 @@ else
   echo "ssh-agent already running."
 fi
 ssh-add --apple-use-keychain ~/.ssh/github > /dev/null 2>&1
-ssh-add --apple-use-keychain ~/.ssh/fastly > /dev/null 2>&1
-ssh-add --apple-use-keychain ~/.ssh/fastly_integralist > /dev/null 2>&1
-ssh-add --apple-use-keychain ~/.ssh/domainr_ssh_proxy.key > /dev/null 2>&1
 
 # Ensure every new shell instance has a gpg-agent running.
 # This is for when we do `git commit` and we need our signing key passphrase.
