@@ -25,7 +25,7 @@ ssh-add --apple-use-keychain ~/.ssh/github > /dev/null 2>&1
 # Ensure every new shell instance has a gpg-agent running.
 # This is for when we do `git commit` and we need our signing key passphrase.
 # We store that into the macOS keychain using pinentry.
-pgrep gpg-agent &>/dev/null || eval $(gpg-agent --daemon)
+#pgrep gpg-agent &>/dev/null || eval $(gpg-agent --daemon)
 
 # DISABLED: Auto-run Go/Rust updates with a manual lock mechanism
 #
