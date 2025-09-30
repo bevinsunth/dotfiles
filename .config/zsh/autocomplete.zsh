@@ -77,34 +77,34 @@ source $(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zs
 #
 complete -o nospace -C $(brew --prefix)/bin/terraform terraform
 
-# Doggo Autocomplete
-#
-if ! command -v doggo &> /dev/null
-then
-  brew install doggo
-fi
-doggo completions zsh > "${fpath[1]}/_doggo"
+## Doggo Autocomplete
+##
+#if ! command -v doggo &> /dev/null
+#then
+#  brew install doggo
+#fi
+#doggo completions zsh > "${fpath[1]}/_doggo"
 
 # 1Password Autocomplete
 #
-if command -v op &> /dev/null
-then
-	eval "$(op completion zsh)"; compdef _op op
-fi
+#if command -v op &> /dev/null
+#then
+#	eval "$(op completion zsh)"; compdef _op op
+#fi
 
-# Golangci-lint Autocomplete
+## Golangci-lint Autocomplete
+##
+#if command -v golangci-lint &> /dev/null
+#then
+#	eval "$(golangci-lint completion zsh)"
+#fi
 #
-if command -v golangci-lint &> /dev/null
-then
-	eval "$(golangci-lint completion zsh)"
-fi
-
-# Dagger Autocomplete
-#
-if command -v dagger &> /dev/null
-then
-	eval "$(dagger completion zsh)"
-fi
+## Dagger Autocomplete
+##
+#if command -v dagger &> /dev/null
+#then
+#	eval "$(dagger completion zsh)"
+#fi
 
 # DISABLED:
 #
