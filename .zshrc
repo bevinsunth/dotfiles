@@ -29,6 +29,11 @@ load_script ~/.config/zsh/bindings.zsh
 load_script ~/.config/zsh/shell.zsh
 load_script ~/.config/zsh/autocomplete.zsh
 
+# bodd
+load_script ~/.config/zsh/bodd/bindings.zsh
+load_script ~/.config/zsh/bodd/functions.zsh
+
+
 export PATH="$MODIFIED_PATH:$PATH"
 typeset -U path
 

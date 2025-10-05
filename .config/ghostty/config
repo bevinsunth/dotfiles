@@ -11,7 +11,6 @@ auto-update = check
 clipboard-paste-protection=true
 clipboard-trim-trailing-spaces = true
 copy-on-select = clipboard
-custom-shader = ~/.config/ghostty/shaders/cursor_blaze.glsl
 font-family = Menlo
 font-feature = -liga
 font-thicken = true

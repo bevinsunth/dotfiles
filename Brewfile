@@ -2,6 +2,8 @@
 # tap "get-woke/tap"
 # tap "sergiobenitez/osxct"
 # tap "warrensbox/tap"
+tap "redis/redis"
+cask "redis"
 brew "zoxide"
 brew "zsh"
 brew "zsh-autocomplete"
