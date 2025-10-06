@@ -1,0 +1,37 @@
+#!/bin/sh
+
+# Get the current branch name from git
+branchname=$(git rev-parse --abbrev-ref HEAD)
+
+# do not prefix fixup! squash! commits
+if cat "$1" | grep -E -i "^(fixup|squash)!" > /dev/null; then
+    exit 0
+fi
+
+function prefixCommitMessage {
+    filename=$1
+    prefix=$2
+
+    originalmessage=$(cat "$filename")
+
+    if [[ $originalmessage == $prefix* ]]
+        then
+        exit 0
+    fi
+
+    echo "$prefix $originalmessage" > "$filename"
+}
+
+# Branch name is like: noticket-something
+if echo "$branchname" | grep -i '^noticket' > /dev/null; then
+    prefixCommitMessage "$1" 'NOTICKET'
+    exit
+fi
+
+# Branch name is like: ABC-123-something
+if echo "$branchname" |  sed -E 's/.*\/([[:alnum:]]{2,}-[[:digit:]]{2,}).*/\1/' > /dev/null; then
+    prefixCommitMessage "$1" "$(echo "$branchname" | sed -E 's/.*\/([[:alnum:]]{2,}-[[:digit:]]{2,}).*/\1/' | tr '[:lower:]' '[:upper:]')"
+    exit
+fi
+
+###### END #####
