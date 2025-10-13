@@ -1,110 +1,76 @@
-# BODD Portal Management Functions
-# Manages Consumer and Merchant portal services
+: <<'Notes'
+Service										HTTP 	HTTPS
+Integration.Api						5003	7003
+ScanService.Api						5067	7067
+InventoryService.Api			5195	7195
+MerchantAdmin.Api					5173	7173
+MerchantPortal						5178	7178
+ConsumerPortal.Api				5110	7177
+Notes
 
-BASE_PATH="$HOME/Projects/bodd-platform/src/"
 
-# Consumer Portal Services
-typeset -A CONSUMER_SERVICES
-CONSUMER_SERVICES=(
-    [ConsumerPortal.Api]="$BASE_PATH/ConsumerPortal/ConsumerPortal.Api:5110"
-    [Integration.Api]="$BASE_PATH/Integration/Integration.Api:5003"
-    [ScanService.Api]="$BASE_PATH/Scan/ScanService.Api:5067"
-)
-CONSUMER_FRONTEND="$BASE_PATH/ConsumerPortal/ConsumerPortal.Api/consumer-portal:3013:npm run dev"
+function start-merchant {
+  local BASE_PATH="${1:-$HOME/Projects/bodd-platform}"
 
-# Merchant Portal Services
-typeset -A MERCHANT_SERVICES
-MERCHANT_SERVICES=(
-    [Integration.Api]="$BASE_PATH/Integration/Integration.Api:5003"
-    [InventoryService.Api]="$BASE_PATH/Inventory/InventoryService.Api:5195"
-    [MerchantAdmin.Api]="$BASE_PATH/MerchantAdmin/MerchantAdmin.Api:5173"
-)
-MERCHANT_FRONTEND="$BASE_PATH/MerchantPortal/merchant-portal:3000:npm run start"
+  echo "🚀 Starting Merchant Portal..."
 
-# Kill process on port
-kill_port() {
-    local port=$1
-    local pid=$(lsof -ti:$port 2>/dev/null)
-    [[ -n "$pid" ]] && kill -9 $pid 2>/dev/null
+  # Kill existing processes on all merchant portal ports
+  # Backend: 5003, 5067, 5173, 5178, 5195, 7003, 7067, 7173, 7178, 7195
+  # Frontend: 3000
+  for port in 5003 5067 5173 5178 5195 7003 7067 7173 7178 7195; do
+    lsof -ti:$port | xargs kill -9 2>/dev/null
+  done
+
+  echo "📦 Starting backend services..."
+  # Launch all .NET backend services
+  dotnet run --project "$BASE_PATH/src/Integration/Integration.Api/Integration.Api.csproj" --no-build &
+  dotnet run --project "$BASE_PATH/src/Scan/ScanService.Api/ScanService.Api.csproj" --no-build &
+  dotnet run --project "$BASE_PATH/src/Inventory/InventoryService.Api/InventoryService.Api.csproj" --no-build &
+  dotnet run --project "$BASE_PATH/src/MerchantAdmin/MerchantAdmin.Api/MerchantAdmin.Api.csproj" --no-build &
+  dotnet run --project "$BASE_PATH/src/MerchantPortal/MerchantPortal.csproj" --no-build &
 }
 
-# Start .NET service
-start_service() {
-    local name=$1 path=$2 port=$3
-    echo "Starting $name on port $port..."
-    kill_port $port
-    cd "$path" && dotnet run --urls="http://localhost:$port" &>/dev/null &
+function stop-merchant {
+  local BASE_PATH="${1:-$HOME/Projects/bodd-platform}"
+
+  echo "🛑 Stopping Merchant Portal..."
+
+  # Kill all merchant portal ports (both HTTP and HTTPS)
+  for port in 5003 5067 5173 5178 5195 7003 7067 7173 7178 7195; do
+    lsof -ti:$port | xargs kill -9 2>/dev/null
+  done
+
+  echo "✅ Merchant Portal stopped!"
 }
 
-# Start frontend
-start_frontend() {
-    local path=$1 port=$2 command=$3
-    echo "Starting frontend on port $port..."
-    kill_port $port
-    cd "$path" && eval "$command" &>/dev/null &
+function start-consumer {
+  local BASE_PATH="${1:-$HOME/Projects/bodd-platform}"
+
+  echo "🚀 Starting Consumer Portal..."
+
+  # Kill existing processes on all consumer portal ports
+  # Backend: 5003, 5067, 5110, 7003, 7067, 7177
+  # Frontend: 3013
+  for port in 5003 5067 5110 7003 7067 7177; do
+    lsof -ti:$port | xargs kill -9 2>/dev/null
+  done
+
+  echo "📦 Starting backend services..."
+  # Launch all .NET backend services
+  dotnet run --project "$BASE_PATH/src/Integration/Integration.Api/Integration.Api.csproj" --no-build &
+  dotnet run --project "$BASE_PATH/src/Scan/ScanService.Api/ScanService.Api.csproj" --no-build &
+  dotnet run --project "$BASE_PATH/src/ConsumerPortal/ConsumerPortal.Api/ConsumerPortal.csproj" --no-build &
 }
 
-# Start Consumer Portal
-start_consumer() {
-    echo "🚀 Starting Consumer Portal..."
+function stop-consumer {
+  local BASE_PATH="${1:-$HOME/Projects/bodd-platform}"
 
-    for service in ${(k)CONSUMER_SERVICES}; do
-        local service_info=$CONSUMER_SERVICES[$service]
-        local path=${service_info%:*}
-        local port=${service_info##*:}
-        start_service "$service" "$path" "$port"
-    done
+  echo "🛑 Stopping Consumer Portal..."
 
-    local frontend_parts=(${(s/:/)CONSUMER_FRONTEND})
-    start_frontend "$frontend_parts[1]" "$frontend_parts[2]" "$frontend_parts[3]"
+  # Kill all consumer portal ports (both HTTP and HTTPS)
+  for port in 5003 5067 5110 7003 7067 7177; do
+    lsof -ti:$port | xargs kill -9 2>/dev/null
+  done
 
-    echo "✅ Consumer Portal started!"
+  echo "✅ Consumer Portal stopped!"
 }
-
-# Start Merchant Portal
-start_merchant() {
-    echo "🚀 Starting Merchant Portal..."
-
-    for service in ${(k)MERCHANT_SERVICES}; do
-        local service_info=$MERCHANT_SERVICES[$service]
-        local path=${service_info%:*}
-        local port=${service_info##*:}
-        start_service "$service" "$path" "$port"
-    done
-
-    local frontend_parts=(${(s/:/)MERCHANT_FRONTEND})
-    start_frontend "$frontend_parts[1]" "$frontend_parts[2]" "$frontend_parts[3]"
-
-    echo "✅ Merchant Portal started!"
-}
-
-# Stop Consumer Portal
-stop_consumer() {
-    echo "🛑 Stopping Consumer Portal..."
-    for service in ${(k)CONSUMER_SERVICES}; do
-        local port=${CONSUMER_SERVICES[$service]##*:}
-        kill_port $port
-    done
-    local frontend_port=${CONSUMER_FRONTEND#*:}
-    kill_port ${frontend_port%:*}
-    echo "✅ Consumer Portal stopped!"
-}
-
-# Stop Merchant Portal
-stop_merchant() {
-    echo "🛑 Stopping Merchant Portal..."
-    for service in ${(k)MERCHANT_SERVICES}; do
-        local port=${MERCHANT_SERVICES[$service]##*:}
-        kill_port $port
-    done
-    local frontend_port=${MERCHANT_FRONTEND#*:}
-    kill_port ${frontend_port%:*}
-    echo "✅ Merchant Portal stopped!"
-}
-
-# Restart portals
-restart_consumer() { stop_consumer && sleep 2 && start_consumer }
-restart_merchant() { stop_merchant && sleep 2 && start_merchant }
-
-# Stop all
-stop_all() { stop_consumer && stop_merchant }
